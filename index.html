@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crisis Travel Help Hub</title>
+  <meta name="description" content="Emergency information hub for travelers affected by Middle East airspace closures. Airport status, airline waivers, embassy contacts, and help board." />
+  <style>
+    :root {
+      --bg-main: #0a0a0a;
+      --bg-card: #141414;
+      --bg-input: #111111;
+      --border-subtle: #333333;
+      --text-main: #ffffff;
+      --text-muted: #b5b5b5;
+      --accent-red: #ff4b4b;
+      --accent-yellow: #ffb347;
+      --accent-green: #24c96f;
+      --accent-blue: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 18px;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 16px 32px;
+    }
+
+    header {
+      margin-bottom: 16px;
+    }
+
+    .banner-rotation {
+      background: #111111;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--border-subtle);
+      font-size: 1.15rem;
+      line-height: 1.4;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .page-title {
+      margin: 12px 0 4px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .section {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #181818;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      margin: 0 0 10px;
+      font-weight: 600;
+    }
+
+    /* WhatsApp share */
+    .share-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background-color: #25d366;
+      color: #000;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .whatsapp-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      position: relative;
+    }
+
+    .whatsapp-icon::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #000;
+      top: 3px;
+      left: 3px;
+    }
+
+    /* Airport status */
+    .airport-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #222222;
+    }
+
+    .pill-code {
+      opacity: 0.75;
+      font-weight: 500;
+    }
+
+    .pill-status {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .pill-red {
+      background-color: rgba(255, 75, 75, 0.15);
+      color: #ff9b9b;
+    }
+
+    .pill-red .pill-status {
+      background-color: var(--accent-red);
+      color: #000000;
+    }
+
+    .pill-yellow {
+      background-color: rgba(255, 179, 71, 0.15);
+      color: #ffd699;
+    }
+
+    .pill-yellow .pill-status {
+      background-color: var(--accent-yellow);
+      color: #000000;
+    }
+
+    .last-updated {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Airline cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border-radius: 10px;
+      padding: 14px 16px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 80px;
+    }
+
+    .card a {
+      text-decoration: none;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--accent-blue);
+      font-weight: 500;
+    }
+
+    .card-url {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    /* Embassy buttons */
+    .button-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .call-btn {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background-color: #141414;
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: left;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .call-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Help board */
+    .help-toggle-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+
+    .help-toggle-btn {
+      flex: 1;
+      padding: 14px 16px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .help-toggle-need {
+      background-color: var(--accent-red);
+      color: #000000;
+    }
+
+    .help-toggle-offer {
+      background-color: var(--accent-green);
+      color: #000000;
+    }
+
+    .help-toggle-btn.inactive {
+      opacity: 0.6;
+    }
+
+    .help-form {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      padding: 12px 12px 10px;
+      margin-bottom: 14px;
+    }
+
+    .help-form-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    textarea,
+    select,
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 8px 9px;
+      border-radius: 8px;
+      border: 1px solid #303030;
+      background-color: var(--bg-input);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    textarea:focus,
+    select:focus,
+    input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      background-color: var(--accent-blue);
+      color: #ffffff;
+      margin-top: 4px;
+    }
+
+    .submit-btn[disabled] {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .status-msg {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      min-height: 1em;
+    }
+
+    .status-error {
+      color: var(--accent-red);
+    }
+
+    .status-success {
+      color: var(--accent-green);
+    }
+
+    /* Feed */
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .feed-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .feed-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .feed-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feed-empty {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .feed-item {
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid #222222;
+      background-color: #111111;
+      margin-top: 6px;
+    }
+
+    .feed-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .badge-need {
+      background-color: rgba(255, 75, 75, 0.2);
+      color: #ffb3b3;
+      border: 1px solid var(--accent-red);
+    }
+
+    .badge-offer {
+      background-color: rgba(36, 201, 111, 0.2);
+      color: #b2f5d8;
+      border: 1px solid var(--accent-green);
+    }
+
+    .feed-location {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .feed-message {
+      font-size: 0.9rem;
+      margin: 0 0 3px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .feed-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .feed-contact {
+      font-size: 0.75rem;
+      color: #c4e0ff;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+
+    /* Larger screens */
+    @media (min-width: 640px) {
+      .page {
+        padding: 20px 18px 32px;
+      }
+
+      .page-title {
+        font-size: 1.6rem;
+      }
+
+      .banner-rotation {
+        font-size: 1.15rem;
+      }
+
+      .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div id="banner" class="banner-rotation" aria-live="polite"></div>
+      <div class="share-bar">
+        <a id="top-whatsapp" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
+          <span class="whatsapp-icon" aria-hidden="true"></span>
+          <span>Share on WhatsApp</span>
+        </a>
+      </div>
+      <h1 class="page-title">Crisis Travel Help Hub</h1>
+      <p class="page-subtitle">
+        Information for travelers affected by March 2026 Middle East airspace closures.
+      </p>
+    </header>
+
+    <!-- SECTION 1 — AIRPORT STATUS -->
+    <section class="section" aria-labelledby="airport-status-title">
+      <h2 class="section-title" id="airport-status-title">Airport status</h2>
+      <div class="airport-pills">
+        <div class="pill pill-red">
+          <span>Dubai</span>
+          <span class="pill-code">(DXB)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-red">
+          <span>Abu Dhabi</span>
+          <span class="pill-code">(AUH)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-red">
+          <span>Doha</span>
+          <span class="pill-code">(DOH)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-red">
+          <span>Beirut</span>
+          <span class="pill-code">(BEY)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-red">
+          <span>Tel Aviv</span>
+          <span class="pill-code">(TLV)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-red">
+          <span>Kuwait</span>
+          <span class="pill-code">(KWI)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-red">
+          <span>Bahrain</span>
+          <span class="pill-code">(BAH)</span>
+          <span class="pill-status">CLOSED</span>
+        </div>
+        <div class="pill pill-yellow">
+          <span>Bali</span>
+          <span class="pill-code">(DPS)</span>
+          <span class="pill-status">DISRUPTED</span>
+        </div>
+      </div>
+      <p class="last-updated">
+        Last verified March 1 2026 — always check your airline directly.
+      </p>
+    </section>
+
+    <!-- SECTION 2 — AIRLINE REBOOKING LINKS -->
+    <section class="section" aria-labelledby="airline-links-title">
+      <h2 class="section-title" id="airline-links-title">Airline rebooking links</h2>
+      <p class="helper-text">
+        These links go directly to airline websites. Many are offering emergency free rebooking waivers.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <a href="https://www.emirates.com" target="_blank" rel="noopener noreferrer">
+            <div class="card-title">Emirates</div>
+            <div class="card-subtitle">Free rebooking waiver — tap to rebook</div>
+            <div class="card-url">https://www.emirates.com</div>
+          </a>
+        </div>
+        <div class="card">
+          <a href="https://www.qatarairways.com" target="_blank" rel="noopener noreferrer">
+            <div class="card-title">Qatar Airways</div>
+            <div class="card-subtitle">Free rebooking waiver — tap to rebook</div>
+            <div class="card-url">https://www.qatarairways.com</div>
+          </a>
+        </div>
+        <div class="card">
+          <a href="https://www.etihad.com" target="_blank" rel="noopener noreferrer">
+            <div class="card-title">Etihad</div>
+            <div class="card-subtitle">Free rebooking waiver — tap to rebook</div>
+            <div class="card-url">https://www.etihad.com</div>
+          </a>
+        </div>
+        <div class="card">
+          <a href="https://www.airindia.com" target="_blank" rel="noopener noreferrer">
+            <div class="card-title">Air India</div>
+            <div class="card-subtitle">Free rebooking waiver — tap to rebook</div>
+            <div class="card-url">https://www.airindia.com</div>
+          </a>
+        </div>
+        <div class="card">
+          <a href="https://www.goindigo.in" target="_blank" rel="noopener noreferrer">
+            <div class="card-title">IndiGo</div>
+            <div class="card-subtitle">Free rebooking waiver — tap to rebook</div>
+            <div class="card-url">https://www.goindigo.in</div>
+          </a>
+        </div>
+        <div class="card">
+          <a href="https://www.flydubai.com" target="_blank" rel="noopener noreferrer">
+            <div class="card-title">flydubai</div>
+            <div class="card-subtitle">Free rebooking waiver — tap to rebook</div>
+            <div class="card-url">https://www.flydubai.com</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 — EMBASSY EMERGENCY NUMBERS -->
+    <section class="section" aria-labelledby="embassy-numbers-title">
+      <h2 class="section-title" id="embassy-numbers-title">Embassy emergency numbers (UAE)</h2>
+      <p class="helper-text">
+        Tap to call. If one number is busy, try again or try another embassy from your country or region.
+      </p>
+      <div class="button-list">
+        <a class="call-btn" href="tel:+97143971222">
+          <span>India Embassy Dubai</span>
+          <span class="call-label">+971 4 397 1222</span>
+        </a>
+        <a class="call-btn" href="tel:+97143973100">
+          <span>Pakistan Embassy UAE</span>
+          <span class="call-label">+971 4 397 3100</span>
+        </a>
+        <a class="call-btn" href="tel:+97143973400">
+          <span>Bangladesh Embassy UAE</span>
+          <span class="call-label">+971 4 397 3400</span>
+        </a>
+        <a class="call-btn" href="tel:+97143973453">
+          <span>Nepal Embassy UAE</span>
+          <span class="call-label">+971 4 397 3453</span>
+        </a>
+        <a class="call-btn" href="tel:+97143094444">
+          <span>UK Embassy UAE</span>
+          <span class="call-label">+971 4 309 4444</span>
+        </a>
+        <a class="call-btn" href="tel:+97124142200">
+          <span>US Embassy UAE</span>
+          <span class="call-label">+971 2 414 2200</span>
+        </a>
+        <a class="call-btn" href="tel:+97143974200">
+          <span>Indonesia Embassy UAE</span>
+          <span class="call-label">+971 4 397 4200</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECTION 4 — HELP BOARD -->
+    <section class="section" aria-labelledby="help-board-title">
+      <h2 class="section-title" id="help-board-title">Help board</h2>
+      <p class="helper-text">
+        Post if you need urgent help (food, medicine, sharing rides or rooms) or if you can help others nearby. Please keep messages short and practical.
+      </p>
+
+      <div class="help-toggle-row" role="tablist" aria-label="Help board type">
+        <button type="button" id="btn-need" class="help-toggle-btn help-toggle-need" role="tab" aria-selected="true">
+          I NEED HELP
+        </button>
+        <button type="button" id="btn-offer" class="help-toggle-btn help-toggle-offer inactive" role="tab" aria-selected="false">
+          I CAN HELP
+        </button>
+      </div>
+
+      <div id="help-form" class="help-form">
+        <p class="help-form-title" id="form-title">Post a request for help</p>
+        <form id="board-form" novalidate>
+          <div class="form-group">
+            <label for="message">Message (max 200 characters)</label>
+            <textarea id="message" name="message" maxlength="200" required placeholder="Example: Family with 2 kids stuck at DXB Terminal 3, need place to sleep tonight."></textarea>
+            <div class="helper-text">Do not share passport numbers or sensitive details.</div>
+          </div>
+          <div class="form-group">
+            <label for="location">Location</label>
+            <select id="location" name="location" required>
+              <option value="">Select location</option>
+              <option>Dubai Airport</option>
+              <option>Abu Dhabi Airport</option>
+              <option>Doha Airport</option>
+              <option>Beirut Airport</option>
+              <option>Bali Airport</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="contact">WhatsApp or email (optional)</label>
+            <input id="contact" name="contact" type="text" placeholder="Example: +9715xxxxxxx or name@example.com" />
+            <div class="helper-text">Optional. Shared publicly in the feed. Only include contact you are comfortable sharing.</div>
+          </div>
+          <button type="submit" id="submit-btn" class="submit-btn">Post to help board</button>
+          <div id="form-status" class="status-msg" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <div class="feed-header">
+        <div class="feed-title">Latest posts near you</div>
+        <div class="feed-meta" id="feed-meta">Refreshing every 60 seconds</div>
+      </div>
+      <ul id="feed-list" class="feed-list" aria-live="polite"></ul>
+      <div id="feed-empty" class="feed-empty" hidden>No posts yet. Be the first to ask for help or offer support.</div>
+    </section>
+
+    <!-- SECTION 5 — BOTTOM WHATSAPP SHARE -->
+    <section class="section">
+      <div class="share-bar" style="justify-content: center;">
+        <a id="bottom-whatsapp" class="whatsapp-btn" target="_blank" rel="noopener noreferrer">
+          <span class="whatsapp-icon" aria-hidden="true"></span>
+          <span>Share this page</span>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      This is an emergency information page created for travelers affected by Middle East airspace closures in March 2026.
+      Always confirm details directly with airlines, airports, and your embassy. This page is not a government site and
+      may change as the situation evolves.
+    </footer>
+  </div>
+
+  <!-- Supabase JS from CDN (UMD for vanilla script) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    (function () {
+      // Rotating banner messages
+      const messages = [
+        "You are not alone. Real help is here.",
+        "आप अकेले नहीं हैं। यहाँ मदद है।",
+        "آپ اکیلے نہیں ہیں۔ مدد یہاں ہے۔",
+        "أنت لست وحدك. المساعدة هنا.",
+        "Anda tidak sendirian. Bantuan ada di sini."
+      ];
+
+      const bannerEl = document.getElementById("banner");
+      let bannerIndex = 0;
+
+      function updateBanner() {
+        if (bannerEl) {
+          bannerEl.textContent = messages[bannerIndex];
+          bannerIndex = (bannerIndex + 1) % messages.length;
+        }
+      }
+
+      updateBanner();
+      setInterval(updateBanner, 3000);
+
+      // WhatsApp share buttons
+      const shareText =
+        "Stranded in the Middle East? This page has embassy numbers, airline waivers and a help board";
+      const encodedText = encodeURIComponent(shareText + " " + window.location.href);
+      const waLink = "https://wa.me/?text=" + encodedText;
+
+      const topWa = document.getElementById("top-whatsapp");
+      const bottomWa = document.getElementById("bottom-whatsapp");
+      if (topWa) topWa.href = waLink;
+      if (bottomWa) bottomWa.href = waLink;
+
+      // Help board — register button handlers first (before Supabase, which may fail to load)
+      const btnNeed = document.getElementById("btn-need");
+      const btnOffer = document.getElementById("btn-offer");
+      const formTitle = document.getElementById("form-title");
+      const boardForm = document.getElementById("board-form");
+      const submitBtn = document.getElementById("submit-btn");
+      const formStatus = document.getElementById("form-status");
+      const feedList = document.getElementById("feed-list");
+      const feedEmpty = document.getElementById("feed-empty");
+      const feedMeta = document.getElementById("feed-meta");
+
+      let currentType = "NEED";
+      let lastRefreshTime = null;
+
+      function setType(type) {
+        currentType = type;
+        if (type === "NEED") {
+          if (btnNeed) { btnNeed.classList.remove("inactive"); btnNeed.setAttribute("aria-selected", "true"); }
+          if (btnOffer) { btnOffer.classList.add("inactive"); btnOffer.setAttribute("aria-selected", "false"); }
+          if (formTitle) formTitle.textContent = "Post a request for help";
+          if (submitBtn) submitBtn.textContent = "Post to help board";
+        } else {
+          if (btnOffer) { btnOffer.classList.remove("inactive"); btnOffer.setAttribute("aria-selected", "true"); }
+          if (btnNeed) { btnNeed.classList.add("inactive"); btnNeed.setAttribute("aria-selected", "false"); }
+          if (formTitle) formTitle.textContent = "Offer help to others";
+          if (submitBtn) submitBtn.textContent = "Offer help";
+        }
+        if (formStatus) {
+          formStatus.textContent = "";
+          formStatus.className = "status-msg";
+        }
+      }
+
+      if (btnNeed) btnNeed.addEventListener("click", function () { setType("NEED"); });
+      if (btnOffer) btnOffer.addEventListener("click", function () { setType("OFFER"); });
+
+      // Supabase setup — run in SQL Editor: create table help_board (id uuid default gen_random_uuid() primary key, type text not null, message text not null, location text not null, contact text, created_at timestamptz default now()); alter table help_board enable row level security; create policy "Allow public insert" on help_board for insert with check (true); create policy "Allow public select" on help_board for select using (true);
+      const SUPABASE_URL = "https://hveyiizpnjfrmsvdvhoi.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2ZXlpaXpwbmpmcm1zdmR2aG9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzNzI5MjksImV4cCI6MjA4Nzk0ODkyOX0.PJym1j1xOnOUxVgN4R-jNv-MeHAEQKqV4c3BYp8beno";
+      const TABLE_NAME = "help_board";
+      let supabase;
+      try {
+        var sb = (typeof supabase !== "undefined" ? supabase : null) || (typeof window !== "undefined" && window.supabase) || null;
+        supabase = sb && sb.createClient ? sb.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+      } catch (e) {
+        supabase = null;
+      }
+
+      function setFormLoading(loading) {
+        if (!submitBtn) return;
+        submitBtn.disabled = loading;
+      }
+
+      function showStatus(message, isError) {
+        if (!formStatus) return;
+        formStatus.textContent = message;
+        formStatus.className = "status-msg " + (isError ? "status-error" : "status-success");
+      }
+
+      function formatTimeAgo(dateString) {
+        if (!dateString) return "";
+        const then = new Date(dateString);
+        const now = new Date();
+        const diffMs = now.getTime() - then.getTime();
+        const diffSec = Math.max(0, Math.floor(diffMs / 1000));
+
+        if (diffSec < 60) return "Just now";
+        const diffMin = Math.floor(diffSec / 60);
+        if (diffMin < 60) return diffMin + " min ago";
+        const diffHours = Math.floor(diffMin / 60);
+        if (diffHours < 24) return diffHours + " hr" + (diffHours > 1 ? "s" : "") + " ago";
+        const diffDays = Math.floor(diffHours / 24);
+        return diffDays + " day" + (diffDays > 1 ? "s" : "") + " ago";
+      }
+
+      function renderFeed(items) {
+        if (!feedList || !feedEmpty) return;
+        feedList.innerHTML = "";
+        if (!items || items.length === 0) {
+          feedEmpty.hidden = false;
+          return;
+        }
+        feedEmpty.hidden = true;
+
+        items.forEach(function (item) {
+          const li = document.createElement("li");
+          li.className = "feed-item";
+
+          const topRow = document.createElement("div");
+          topRow.className = "feed-top-row";
+
+          const badge = document.createElement("span");
+          const type = (item.type || "").toUpperCase() === "OFFER" ? "OFFER" : "NEED";
+          badge.className = "badge " + (type === "OFFER" ? "badge-offer" : "badge-need");
+          badge.textContent = type === "OFFER" ? "OFFER" : "NEED";
+
+          const location = document.createElement("div");
+          location.className = "feed-location";
+          location.textContent = item.location || "Location not specified";
+
+          topRow.appendChild(badge);
+          topRow.appendChild(location);
+
+          const msg = document.createElement("p");
+          msg.className = "feed-message";
+          msg.textContent = item.message || "";
+
+          const time = document.createElement("div");
+          time.className = "feed-time";
+          time.textContent = formatTimeAgo(item.created_at);
+
+          li.appendChild(topRow);
+          li.appendChild(msg);
+          li.appendChild(time);
+
+          if (item.contact) {
+            const contact = document.createElement("div");
+            contact.className = "feed-contact";
+            contact.textContent = item.contact;
+            li.appendChild(contact);
+          }
+
+          feedList.appendChild(li);
+        });
+      }
+
+      async function loadFeed(showErrors) {
+        if (!supabase) {
+          if (feedMeta) feedMeta.textContent = "Feed unavailable. Check connection.";
+          return;
+        }
+        try {
+          if (feedMeta) {
+            feedMeta.textContent = "Loading latest posts…";
+          }
+          const { data, error } = await supabase
+            .from(TABLE_NAME)
+            .select("id, type, message, location, contact, created_at")
+            .order("created_at", { ascending: false })
+            .limit(30);
+
+          if (error) {
+            if (showErrors && formStatus) {
+              showStatus("Could not load latest posts yet.", true);
+            }
+            if (feedMeta) {
+              feedMeta.textContent = "Feed may be delayed. Refreshing every 60 seconds.";
+            }
+            return;
+          }
+          renderFeed(data || []);
+          lastRefreshTime = new Date();
+          if (feedMeta) {
+            feedMeta.textContent = "Last updated just now · Refreshing every 60 seconds";
+          }
+        } catch (e) {
+          if (showErrors && formStatus) {
+            showStatus("Temporary issue loading posts.", true);
+          }
+          if (feedMeta) {
+            feedMeta.textContent = "Feed may be delayed. Refreshing every 60 seconds.";
+          }
+        }
+      }
+
+      if (boardForm) {
+        boardForm.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const messageEl = document.getElementById("message");
+          const locationEl = document.getElementById("location");
+          const contactEl = document.getElementById("contact");
+          if (!messageEl || !locationEl || !contactEl) return;
+
+          const message = (messageEl.value || "").trim();
+          const location = (locationEl.value || "").trim();
+          const contact = (contactEl.value || "").trim();
+
+          if (!message || !location) {
+            showStatus("Please fill in message and location.", true);
+            return;
+          }
+
+          if (message.length > 200) {
+            showStatus("Message must be 200 characters or fewer.", true);
+            return;
+          }
+
+          if (!supabase) {
+            showStatus("Connection unavailable. Please try again later.", true);
+            return;
+          }
+          setFormLoading(true);
+          showStatus("Posting…", false);
+
+          try {
+            const { error } = await supabase.from(TABLE_NAME).insert({
+              type: currentType,
+              message: message,
+              location: location,
+              contact: contact || null
+            });
+
+            if (error) {
+              showStatus("Could not post right now. Please try again in a minute.", true);
+            } else {
+              showStatus("Posted. Thank you for using this to help others.", false);
+              messageEl.value = "";
+              locationEl.value = "";
+              contactEl.value = "";
+              loadFeed(false);
+            }
+          } catch (err) {
+            showStatus("Network issue posting your message. Please try again.", true);
+          } finally {
+            setFormLoading(false);
+          }
+        });
+      }
+
+      // Initial load and periodic refresh
+      loadFeed(false);
+      setInterval(function () {
+        loadFeed(false);
+      }, 60000);
+    })();
+  </script>
+</body>
+</html>
+
