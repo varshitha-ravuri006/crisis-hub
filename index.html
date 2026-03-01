@@ -256,6 +256,17 @@
     }
 
     /* Help board */
+    .help-board-warning {
+      background-color: rgba(255, 179, 71, 0.15);
+      border: 1px solid var(--accent-yellow);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #ffd699;
+    }
+
     .help-toggle-row {
       display: flex;
       gap: 10px;
@@ -655,6 +666,14 @@
       <h2 class="section-title" id="help-board-title">Help board</h2>
       <p class="helper-text">
         Post if you need urgent help (food, medicine, sharing rides or rooms) or if you can help others nearby. Please keep messages short and practical.
+      </p>
+
+      <div class="help-board-warning" role="alert">
+        Help board is temporarily unavailable due to a technical issue. Check back in a few hours. Embassy numbers and airline links above are fully working.
+      </div>
+
+      <p class="helper-text">
+        Posts are public and unmoderated. Do not share your full name, passport number, or any sensitive personal details. Use at your own discretion.
       </p>
 
       <div class="help-toggle-row" role="tablist" aria-label="Help board type">
